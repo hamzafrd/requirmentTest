@@ -18,6 +18,7 @@
                                     <th scope="col">IS_DONE</th>
                                     <th scope="col">TODO</th>
                                     <th scope="col">AKSI</th>
+                                    <th scope="col">SORT</th>
                                 </tr>
                             </thead>
                             <tbody id="todoBody">
@@ -44,6 +45,10 @@
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">HAPUS</button>
                                             </form>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm move-up-btn btn-primary">Up</button>
+                                            <button class="btn btn-sm move-down-btn btn-primary">Down</button>
                                         </td>
                                     </tr>
                                 @empty
@@ -72,9 +77,9 @@
                                     <tr>
                                         <td>
                                             @if ($todo->is_done == 0)
-                                                <p class="">Belum Selesai</p>
+                                                <p>Belum Selesai</p>
                                             @else
-                                                <p class="btn btn-sm btn-success">Selesai</p>
+                                                <p>Selesai</p>
                                             @endif
                                         </td>
                                         <td>{{ $todo->name }}</td>
@@ -91,6 +96,7 @@
                                                 </button>
                                             </form>
                                         </td>
+
                                     </tr>
                                 @empty
                                     <div class="alert alert-danger">
@@ -110,47 +116,75 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            const table = $('#todoBody tr')[0]
-            const trashedTable = $('#todoTrashedBody tr')[0]
-            console.log(table, trashedTable)
+            const table = $('#todoBody')
+            const trashedTable = $('#todoTrashedBody')
+
 
             const todosURL = "{{ route('todo.getTodos') }}"
             const todosTrashedURL = "{{ route('todo.getTodosTrashed') }}"
 
-            postData(todosURL);
-            postData(todosTrashedURL);
+            $.ajax({
+                url: todosTrashedURL,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    let html = ''
+                    data.forEach(function(todo, index) {
+                        console.log(todo);
+                        html += '<tr>'
+                        html += '<td>' + (todo.is_done == 0 ?
+                                '<div class="">Belum Selesai</div>' :
+                                '<div class="">Selesai</div>') +
+                            '</td>';
+                        html += '<td>' + todo.name + '</td>';
+                        html += '<td class="text-center">';
+                        html += '<a href="/todo/recover/' + todo.id +
+                            '" class="btn btn-sm btn-success">Recover</a>';
+                        html += '<form class="delete-form" data-id="' + todo.id +
+                            '" action="/todo/destroyPermanent/' + todo.id + '" method="POST">';
+                        html +=
+                            '<button type="submit" class="btn btn-sm btn-danger delete-btn">Hapus Permanent</button>';
+                        html += '@csrf';
+                        html += '@method('GET')';
+                        html += '</form>';
+                        html += '</td>';
 
-            function postData(baseURL) {
-                $.ajax({
-                    url: baseURL,
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        data.map(res => {
-                            var html = '<tr>' +
-                                '<td>' +
-                                (res.is_done == 0 ? '<p class="">Belum Selesai</p>' :
-                                    '<p class="btn btn-sm btn-success">Selesai</p>') +
-                                '</td>' +
-                                '<td>' + res.name + '</td>' +
-                                '<td class="text-center">' +
-                                '<form action="{{ route('todo.destroyPermanent', $todo->id) }}" method="POST">' +
-                                '<a href="{{ route('todo.recover', $todo->id) }}" class="btn btn-sm btn-success">Recover</a>' +
-                                '@method('GET')' +
-                                '<button type="submit" class="btn btn-sm btn-danger">Hapus dari history</button>' +
-                                '</form>' +
-                                '</td>' +
-                                '</tr>';
-                        })
-                        table.append(table)
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle errors
-                        console.error(error);
-                    }
-                })
-            }
+                        html += ''
+
+                    })
+                    trashedTable.html(html)
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors
+                    console.error(error);
+                },
+
+            })
+
 
         })
+
+        const moveUpBtns = document.querySelectorAll('.move-up-btn');
+        const moveDownBtns = document.querySelectorAll('.move-down-btn');
+
+        moveUpBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                if (row.previousElementSibling && row.previousElementSibling.querySelector(
+                        '.move-up-btn')) {
+                    row.parentNode.insertBefore(row, row.previousElementSibling);
+                }
+            });
+        });
+
+        moveDownBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const nextRow = row.nextElementSibling;
+                if (nextRow && nextRow.querySelector('.move-down-btn') && nextRow.nextElementSibling) {
+                    row.parentNode.insertBefore(nextRow, row);
+                }
+            });
+        });
     </script>
 @endpush

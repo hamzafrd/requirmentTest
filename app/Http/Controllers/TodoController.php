@@ -34,6 +34,10 @@ class TodoController extends Controller
         return response()->json($todos);
     }
 
+    public function test()
+    {
+        return response([]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -106,14 +110,17 @@ class TodoController extends Controller
             'name'     => 'required|min:5',
         ]);
 
-        $post = Todo::findOrFail($id);
-        if (!$request->is_done) {
-            $post->update([
+        $todo = Todo::findOrFail($id);
+
+        if ($request->is_done == 1) {
+            $todo->update([
                 'name'     => $request->name,
+                'is_done' => 1,
             ]);
         } else {
-            $post->update([
+            $todo->update([
                 'name'     => $request->name,
+                'is_done' => 0,
             ]);
         }
 
