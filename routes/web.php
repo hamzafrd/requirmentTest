@@ -32,5 +32,8 @@ Route::get('todo/getTodosTrashed', [TodoController::class, 'getTodosTrashed'])->
 
 Route::get('todo/test', [TodoController::class, 'test'])->name('todo.test');
 
+Route::post('/todos/{todo}/move-up', [TodoController::class, 'moveUp'])->name('todos.moveUp');
+Route::post('/todos/{todo}/move-down', [TodoController::class, 'moveDown'])->name('todos.moveDown');
+
 // Route::resource('users', UserController::class);
 Route::resource('todo', TodoController::class);

@@ -22,7 +22,7 @@
                                 </tr>
                             </thead>
                             <tbody id="todoBody">
-                                @forelse ($todos as $todo)
+                                @forelse ($todos as $index => $todo)
                                     <tr>
                                         <td>
                                             @if ($todo->is_done == 0)
@@ -47,8 +47,18 @@
                                             </form>
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm move-up-btn btn-primary">Up</button>
-                                            <button class="btn btn-sm move-down-btn btn-primary">Down</button>
+                                            <form action="{{ route('todos.moveUp', ['todo' => $todo->id]) }}" method="POST"
+                                                style="display:inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-primary"
+                                                    {{ $index == 0 ? 'disabled' : '' }}>Up</button>
+                                            </form>
+                                            <form action="{{ route('todos.moveDown', ['todo' => $todo->id]) }}"
+                                                method="POST" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-primary"
+                                                    {{ $index == count($todos) - 1 ? 'disabled' : '' }}>Down</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty

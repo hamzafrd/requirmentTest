@@ -15,7 +15,8 @@ class TodoController extends Controller
     public function index()
     {
         //
-        $todos = Todo::latest()->paginate(5);
+        $todos = Todo::orderBy('position')->paginate(5);
+
         $todos_trashed = Todo::onlyTrashed()->get();
 
         return view('todo.index', compact('todos', 'todos_trashed'));
@@ -61,9 +62,11 @@ class TodoController extends Controller
             'name'     => 'required|min:5',
         ]);
 
+        $position = Todo::count() + 1;
         //create post
         Todo::create([
-            'name'     => $request->name
+            'name'     => $request->name,
+            'position' => $position,
         ]);
 
         //redirect to index
@@ -161,5 +164,47 @@ class TodoController extends Controller
         $todo = Todo::onlyTrashed()->findOrFail($id);
         $todo->forceDelete();
         return redirect()->route('todo.index')->with(['success' => 'Data Berhasil Dihapus!']);
+    }
+
+    public function moveUp(Todo $todo)
+    {
+        $currentPosition = $todo->position;
+
+        // Find the previous item
+        $previousTodo = Todo::where('position', '<', $currentPosition)
+            ->orderBy('position', 'desc')
+            ->first();
+
+        if ($previousTodo) {
+            // Swap positions with the previous item
+            // $todo->update(['position' => $previousTodo->position]);
+            // $previousTodo->update(['position' => $currentPosition]);
+            $todo->position = $previousTodo->position;
+            $previousTodo->position = $currentPosition;
+            $todo->save();
+            $previousTodo->save();
+        }
+
+        return redirect()->route('todo.index')->with('success', 'Todo moved up successfully');
+    }
+
+    public function moveDown(Todo $todo)
+    {
+        $currentPosition = $todo->position;
+        // Find the next item
+        $nextTodo = Todo::where('position', '>', $currentPosition)
+            ->orderBy('position')
+            ->first();
+
+        if ($nextTodo) {
+            // Swap positions with the next item
+            $todo->position = $nextTodo->position;
+            $nextTodo->position = $currentPosition;
+
+            // Save changes to the database
+            $todo->save();
+            $nextTodo->save();
+        }
+        return redirect()->route('todo.index')->with('success', 'Todo moved down successfully');
     }
 }

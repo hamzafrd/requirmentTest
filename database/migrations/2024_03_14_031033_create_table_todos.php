@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('is_done')->default(false);
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('deleted_at')->nullable();
+            $table->integer('position')->nullable();
             $table->timestamps();
             // $table->timestamps();
         });
