@@ -27,10 +27,10 @@
                                         <td>
                                             @if ($todo->is_done == 0)
                                                 <div class="btn btn-sm btn-danger">Belum Selesai</div>
+                                                <p class="m-0">Dibuat : {{ $todo->created_at }}</p>
                                             @else
                                                 <div class="btn btn-sm btn-success">Selesai</div>
-                                                <p class="m-0">Diselesaikan pada :</p>
-                                                <p class="m-0">{{ $todo->completed_at }}</p>
+                                                <p class="m-0">Diselesaikan : {{ $todo->completed_at }}</p>
                                             @endif
                                         </td>
                                         <td>{{ $todo->name }}</td>
