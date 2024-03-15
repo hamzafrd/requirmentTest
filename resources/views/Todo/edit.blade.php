@@ -25,13 +25,15 @@
 
                             <div class="form-check">
                                 <label class="font-weight-bold">Apakah Sudah Selesai ?</label>
-                                @if ($todo->is_done)
+                                {{-- @if ($todo->is_done)
                                     <input type="checkbox" class="form-check-input @error('is_done') is-invalid @enderror"
                                         name="is_done" value="{{ old('is_done', $todo->is_done) }}" checked>
                                 @else
                                     <input type="checkbox" class="form-check-input @error('is_done') is-invalid @enderror"
                                         name="is_done" value="{{ old('is_done', $todo->is_done) }}">
-                                @endif
+                                @endif --}}
+                                <input type="checkbox" class="form-check-input @error('is_done') is-invalid @enderror"
+                                    name="is_done" value="1" {{ $todo->is_done ? 'checked' : '' }}>
 
                                 <!-- error message untuk content -->
                                 @error('content')

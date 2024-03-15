@@ -112,19 +112,21 @@ class TodoController extends Controller
 
         $todo = Todo::findOrFail($id);
 
-        if ($request->is_done == 1) {
-            $todo->update([
-                'name'     => $request->name,
-                'is_done' => 1,
-            ]);
-        } else {
-            $todo->update([
-                'name'     => $request->name,
-                'is_done' => 0,
-            ]);
-        }
-
-
+        // if ($request->is_done == 0) {
+        //     $todo->update([
+        //         'name'     => $request->name,
+        //         'is_done' => 1,
+        //     ]);
+        // } else {
+        //     $todo->update([
+        //         'name'     => $request->name,
+        //         'is_done' => 0,
+        //     ]);
+        // }
+        $todo->update([
+            'name'     => $request->name,
+            'is_done' => $request->has('is_done') ? 1 : 0,
+        ]);
 
         //redirect to index
         return redirect()->route('todo.index')->with(['success' => 'Data Berhasil Diubah!']);
