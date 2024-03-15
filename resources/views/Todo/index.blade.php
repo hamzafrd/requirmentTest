@@ -29,6 +29,8 @@
                                                 <div class="btn btn-sm btn-danger">Belum Selesai</div>
                                             @else
                                                 <div class="btn btn-sm btn-success">Selesai</div>
+                                                <p class="m-0">Diselesaikan pada :</p>
+                                                <p class="m-0">{{ $todo->completed_at }}</p>
                                             @endif
                                         </td>
                                         <td>{{ $todo->name }}</td>

@@ -12,6 +12,6 @@ class Todo extends Model
     use SoftDeletes;
 
     protected $table = 'todos';
-    public $fillable = ['name', 'is_done', 'completed_at', 'position'];
+    public $fillable = ['name', 'is_done', 'completed_at', 'position', 'completed_at'];
     protected $dates = ['deleted_at'];
 }

@@ -15,7 +15,7 @@ class TodoController extends Controller
     public function index()
     {
         //
-        $todos = Todo::orderBy('position')->paginate(5);
+        $todos = Todo::orderBy('position')->paginate(10);
 
         $todos_trashed = Todo::onlyTrashed()->get();
 
@@ -57,6 +57,7 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
+
         //validate form
         $this->validate($request, [
             'name'     => 'required|min:5',
@@ -126,9 +127,11 @@ class TodoController extends Controller
         //         'is_done' => 0,
         //     ]);
         // }
+
         $todo->update([
             'name'     => $request->name,
             'is_done' => $request->has('is_done') ? 1 : 0,
+            'completed_at' => $request->has('is_done') ? now() : null,
         ]);
 
         //redirect to index
