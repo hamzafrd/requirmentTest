@@ -63,7 +63,7 @@ class TodoController extends Controller
             'name'     => 'required|min:5',
         ]);
 
-        $position = Todo::count() + 1;
+        $position = Todo::withTrashed()->max('position') + 1;
         //create post
         Todo::create([
             'name'     => $request->name,
@@ -162,10 +162,24 @@ class TodoController extends Controller
         return redirect()->route('todo.index')->with(['success' => 'Data Berhasil Dihapus!']);
     }
 
+    public function sortPosition()
+    {
+        $todos = Todo::withTrashed()->orderBy('position')->get();
+        $lastPosition = 0;
+
+        foreach ($todos as $todo) {
+            if ($todo->position != $lastPosition + 1) {
+                $todo->update(['position' => $lastPosition + 1]);
+            }
+            $lastPosition = $todo->position;
+        }
+    }
+
     public function destroyPermanent($id)
     {
         $todo = Todo::onlyTrashed()->findOrFail($id);
         $todo->forceDelete();
+        $this->sortPosition();
         return redirect()->route('todo.index')->with(['success' => 'Data Berhasil Dihapus!']);
     }
 
